@@ -1,0 +1,224 @@
+/* LED Effects */
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px rgba(var(--primary), 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(var(--primary), 0.8), 0 0 30px rgba(var(--accent), 0.4);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(var(--primary), 0.5);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Rotating LED ring animation */
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Color change animation */
+@keyframes colorChange {
+  0% {
+    border-color: #ff0080;
+    box-shadow: 0 0 10px #ff0080, 0 0 20px #ff0080;
+  }
+  20% {
+    border-color: #7928ca;
+    box-shadow: 0 0 10px #7928ca, 0 0 20px #7928ca;
+  }
+  40% {
+    border-color: #0070f3;
+    box-shadow: 0 0 10px #0070f3, 0 0 20px #0070f3;
+  }
+  60% {
+    border-color: #00c8ff;
+    box-shadow: 0 0 10px #00c8ff, 0 0 20px #00c8ff;
+  }
+  80% {
+    border-color: #00dfd8;
+    box-shadow: 0 0 10px #00dfd8, 0 0 20px #00dfd8;
+  }
+  100% {
+    border-color: #ff0080;
+    box-shadow: 0 0 10px #ff0080, 0 0 20px #ff0080;
+  }
+}
+
+/* Solid color LED ring for header */
+.led-ring-solid {
+  border: 3px solid #0070f3;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #0070f3, 0 0 20px #0070f3;
+  animation: rotate 8s linear infinite;
+}
+
+/* Solid color LED ring for footer */
+.led-ring-solid-small {
+  border: 2px solid #0070f3;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #0070f3, 0 0 16px #0070f3;
+  animation: rotate 6s linear infinite;
+}
+
+/* Multi-color LED ring for homepage */
+.led-ring {
+  border: 3px solid transparent;
+  border-radius: 50%;
+  animation: rotate 8s linear infinite, colorChange 10s infinite;
+}
+
+/* LED ring for large logo */
+.led-ring-large {
+  border: 6px solid transparent;
+  border-radius: 50%;
+  animation: rotate 12s linear infinite, colorChange 10s infinite;
+}
+
+/* LED ring for small logo */
+.led-ring-small {
+  border: 2px solid transparent;
+  border-radius: 50%;
+  animation: rotate 6s linear infinite, colorChange 10s infinite;
+}
+
+.led-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.led-button:hover {
+  box-shadow: 0 0 15px rgba(var(--primary), 0.7), 0 0 25px rgba(var(--accent), 0.4);
+}
+
+.led-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, hsl(var(--primary)), transparent);
+  animation: glow 2s linear infinite;
+}
+
+.led-button-subtle:hover {
+  box-shadow: 0 0 10px rgba(var(--primary), 0.5);
+}
+
+.led-card {
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.led-card:hover {
+  border-color: hsl(var(--primary) / 0.3);
+  box-shadow: 0 0 15px rgba(var(--primary), 0.2), 0 0 25px rgba(var(--accent), 0.1);
+}
+
+.led-tabs {
+  position: relative;
+  overflow: hidden;
+}
+
+.led-tabs::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, hsl(var(--primary)), transparent);
+  animation: glow 3s linear infinite;
+}
+
+/* Glowing text effect */
+.glow-text {
+  text-shadow: 0 0 5px rgba(var(--primary), 0.7);
+  animation: pulse 3s infinite;
+}
+
+/* LED background grid */
+.bg-grid-white {
+  background-size: 100px 100px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+/* Neon border */
+.neon-border {
+  border: 1px solid hsl(var(--primary));
+  box-shadow: 0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary) / 0.5);
+}
+
+/* Glowing dots */
+.glowing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: hsl(var(--primary));
+  box-shadow: 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary) / 0.5);
+  animation: pulse 2s infinite;
+}
+
+/* Logo animation */
+.logo-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Logo container */
+.logo-container {
+  position: relative;
+  display: inline-block;
+}
+
+.logo-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(var(--primary), 0.7);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.logo-container:hover::after {
+  opacity: 1;
+}
+
+/* Shadow glow effect for logo */
+.shadow-glow {
+  box-shadow: 0 0 10px rgba(var(--primary), 0.5), 0 0 20px rgba(var(--accent), 0.3);
+}
