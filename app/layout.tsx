@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Mona_Sans as FontSans } from "next/font/google"
+import { Inter } from "next/font/google"
 import "./globals.css"
 import "./led-effects.css"
 import { cn } from "@/lib/utils"
@@ -10,8 +10,9 @@ import { AuthProvider } from "@/lib/auth-context"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 
-const fontSans = FontSans({
-  subsets: ["latin", "arabic"],
+// استبدال الخط Mona_Sans بخط Inter المدعوم بشكل أفضل
+const inter = Inter({
+  subsets: ["latin"],
   variable: "--font-sans",
 })
 
@@ -28,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" suppressHydrationWarning>
-      <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
+      <body className={cn("min-h-screen bg-background font-sans antialiased", inter.variable)}>
         <LanguageProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <AuthProvider>

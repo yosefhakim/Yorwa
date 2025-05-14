@@ -45,6 +45,18 @@ const translations = {
     uploadCover: "رفع صورة الغلاف",
     categories: "التصنيفات",
     footer: "جميع الحقوق محفوظة © يُروى 2025",
+    storyCategories: "أقسام القصص",
+    fiction: "خيال",
+    nonFiction: "واقعي",
+    poetry: "شعر",
+    mystery: "غموض",
+    romance: "رومانسية",
+    sciFi: "خيال علمي",
+    fantasy: "فانتازيا",
+    horror: "رعب",
+    thriller: "إثارة",
+    historical: "تاريخي",
+    anime: "أنمي",
   },
   en: {
     siteName: "Yorwa",
@@ -79,6 +91,18 @@ const translations = {
     uploadCover: "Upload Cover",
     categories: "Categories",
     footer: "All Rights Reserved © Yorwa 2025",
+    storyCategories: "Story Categories",
+    fiction: "Fiction",
+    nonFiction: "Non-Fiction",
+    poetry: "Poetry",
+    mystery: "Mystery",
+    romance: "Romance",
+    sciFi: "Sci-Fi",
+    fantasy: "Fantasy",
+    horror: "Horror",
+    thriller: "Thriller",
+    historical: "Historical",
+    anime: "Anime",
   },
 }
 
@@ -88,6 +112,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>("ar")
 
   useEffect(() => {
+    // Check if user is logged in on component mount
     const savedLanguage = localStorage.getItem("language") as Language
     if (savedLanguage && (savedLanguage === "ar" || savedLanguage === "en")) {
       setLanguageState(savedLanguage)

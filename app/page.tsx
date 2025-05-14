@@ -4,79 +4,50 @@ import { useLanguage } from "@/components/language-provider"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { BookOpen, Headphones, Star, UserCheck } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { BookOpen, Bookmark, Flame, Star, Tv } from "lucide-react"
 
 export default function Home() {
   const { t, language } = useLanguage()
 
-  // Mock data for featured stories
-  const featuredStories = [
+  // أقسام أنواع القصص
+  const storyCategories = [
     {
-      id: 1,
-      title: language === "ar" ? "رحلة إلى المجهول" : "Journey to the Unknown",
-      excerpt:
-        language === "ar"
-          ? "قصة مثيرة عن مغامرة في عالم غامض..."
-          : "An exciting story about an adventure in a mysterious world...",
-      author: language === "ar" ? "أحمد محمود" : "Ahmed Mahmoud",
-      authorId: 1,
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      coverImage: "/placeholder.svg?height=200&width=400",
-      hasAudio: true,
-      rating: 4.8,
+      id: "fiction",
+      name: language === "ar" ? "خيال" : "Fiction",
+      icon: <BookOpen className="h-5 w-5" />,
+      description: language === "ar" ? "قصص خيالية وروايات إبداعية" : "Creative fiction and novels",
+      color: "bg-blue-500",
     },
     {
-      id: 2,
-      title: language === "ar" ? "صدى الماضي" : "Echo of the Past",
-      excerpt:
-        language === "ar" ? "قصة درامية عن ذكريات لا تُنسى..." : "A dramatic story about unforgettable memories...",
-      author: language === "ar" ? "سارة خالد" : "Sara Khalid",
-      authorId: 2,
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      coverImage: "/placeholder.svg?height=200&width=400",
-      hasAudio: false,
-      rating: 4.5,
+      id: "anime",
+      name: language === "ar" ? "أنمي" : "Anime",
+      icon: <Tv className="h-5 w-5" />,
+      description: language === "ar" ? "قصص مستوحاة من عالم الأنمي والمانجا" : "Stories inspired by anime and manga",
+      color: "bg-pink-500",
     },
     {
-      id: 3,
-      title: language === "ar" ? "أسرار الليل" : "Secrets of the Night",
-      excerpt:
-        language === "ar"
-          ? "قصة غموض وتشويق تدور أحداثها في ظلام الليل..."
-          : "A mystery and suspense story that takes place in the darkness of night...",
-      author: language === "ar" ? "محمد علي" : "Mohammed Ali",
-      authorId: 3,
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      coverImage: "/placeholder.svg?height=200&width=400",
-      hasAudio: true,
-      rating: 4.7,
+      id: "non-fiction",
+      name: language === "ar" ? "واقعي" : "Non-Fiction",
+      icon: <Star className="h-5 w-5" />,
+      description: language === "ar" ? "قصص واقعية وتجارب حقيقية" : "Real stories and experiences",
+      color: "bg-green-500",
+    },
+    {
+      id: "poetry",
+      name: language === "ar" ? "شعر" : "Poetry",
+      icon: <Bookmark className="h-5 w-5" />,
+      description: language === "ar" ? "قصائد وأشعار متنوعة" : "Various poems and poetry",
+      color: "bg-purple-500",
+    },
+    {
+      id: "mystery",
+      name: language === "ar" ? "غموض" : "Mystery",
+      icon: <Flame className="h-5 w-5" />,
+      description: language === "ar" ? "قصص غموض وتشويق" : "Mystery and suspense stories",
+      color: "bg-red-500",
     },
   ]
-
-  // Mock data for weekly writer
-  const weeklyWriter = {
-    id: 1,
-    name: language === "ar" ? "ليلى أحمد" : "Layla Ahmed",
-    bio:
-      language === "ar"
-        ? "كاتبة متميزة في مجال القصص القصيرة والروايات الخيالية، حازت على إعجاب القراء بأسلوبها الفريد في السرد والوصف."
-        : "A distinguished writer in the field of short stories and fiction novels, who has won readers' admiration for her unique style of narration and description.",
-    avatar: "/placeholder.svg?height=120&width=120",
-    followers: 1250,
-    stories: 24,
-    engagement: 4.9,
-    featuredStory: {
-      id: 101,
-      title: language === "ar" ? "عندما تتكلم الأشجار" : "When Trees Speak",
-      excerpt:
-        language === "ar"
-          ? "في غابة بعيدة، كانت الأشجار تتهامس بأسرار قديمة، وكان هناك فتى صغير يستطيع سماعها..."
-          : "In a distant forest, trees whispered ancient secrets, and there was a little boy who could hear them...",
-      coverImage: "/placeholder.svg?height=200&width=400",
-    },
-  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -120,69 +91,43 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Stories Section */}
-      <section className="w-full py-12 md:py-24 lg:py-32">
+      {/* Story Categories Section */}
+      <section className="w-full py-12 md:py-24">
         <div className="container px-4 md:px-6">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl led-glow">
-                {t("featuredStories")}
-              </h2>
-            </div>
-            <div className="mx-auto grid justify-center gap-4 sm:grid-cols-2 md:max-w-[64rem] md:grid-cols-3">
-              {featuredStories.map((story) => (
-                <Card key={story.id} className="overflow-hidden led-card">
-                  <div className="relative">
-                    <img
-                      src={story.coverImage || "/placeholder.svg"}
-                      alt={story.title}
-                      className="w-full h-48 object-cover"
-                    />
-                    {story.hasAudio && (
-                      <div className="absolute top-2 right-2 bg-primary text-primary-foreground p-1 rounded-md">
-                        <Headphones className="h-4 w-4" />
-                      </div>
-                    )}
-                  </div>
-                  <CardHeader>
-                    <CardTitle>{story.title}</CardTitle>
-                    <div className="flex items-center gap-2">
-                      <Link href={`/writers/${story.authorId}`} className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6">
-                          <AvatarImage src={story.authorAvatar || "/placeholder.svg"} alt={story.author} />
-                          <AvatarFallback>{story.author.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm text-muted-foreground">{story.author}</span>
-                      </Link>
-                      <div className="flex items-center ml-auto rtl:ml-0 rtl:mr-auto">
-                        <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                        <span className="text-sm ml-1 rtl:mr-1">{story.rating}</span>
-                      </div>
+          <div className="flex flex-col items-center justify-center space-y-4 text-center mb-10">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl led-glow">
+              {language === "ar" ? "أقسام القصص" : "Story Categories"}
+            </h2>
+            <p className="text-muted-foreground max-w-[700px]">
+              {language === "ar"
+                ? "استكشف مجموعة متنوعة من القصص المصنفة حسب النوع"
+                : "Explore a variety of stories categorized by type"}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {storyCategories.map((category) => (
+              <Link href={`/stories?category=${category.id}`} key={category.id}>
+                <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full led-card">
+                  <div className={`h-2 ${category.color}`}></div>
+                  <CardContent className="p-6 flex flex-col items-center text-center space-y-4">
+                    <div
+                      className={`w-12 h-12 rounded-full ${category.color} bg-opacity-20 flex items-center justify-center`}
+                    >
+                      {category.icon}
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">{story.excerpt}</p>
+                    <h3 className="text-xl font-bold">{category.name}</h3>
+                    <p className="text-muted-foreground">{category.description}</p>
                   </CardContent>
-                  <CardFooter>
-                    <Button variant="ghost" className="w-full led-button-subtle" asChild>
-                      <Link href={`/stories/${story.id}`}>
-                        <BookOpen className="mr-2 h-4 w-4 rtl:ml-2 rtl:mr-0" />
-                        {t("readMore")}
-                      </Link>
-                    </Button>
-                  </CardFooter>
                 </Card>
-              ))}
-            </div>
-            <Button variant="outline" asChild className="led-button">
-              <Link href="/stories">{t("readMore")}</Link>
-            </Button>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Weekly Writer Section with LED effect */}
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-muted relative overflow-hidden">
+      {/* Weekly Writer Section with LED effect - Simplified */}
+      <section className="w-full py-12 md:py-24 bg-muted relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,transparent)]" />
         <div className="absolute top-1/3 left-1/3 w-48 h-48 bg-primary/20 rounded-full filter blur-3xl opacity-70 animate-pulse" />
         <div className="absolute bottom-1/4 right-1/3 w-32 h-32 bg-accent/20 rounded-full filter blur-2xl opacity-70 animate-pulse" />
@@ -200,73 +145,56 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid gap-8 md:grid-cols-2 lg:gap-12 items-center max-w-6xl mx-auto">
-              {/* Writer Profile */}
-              <div className="flex flex-col items-center space-y-4">
-                <div className="relative">
-                  <Avatar className="h-32 w-32 border-4 border-background shadow-lg">
-                    <AvatarImage src={weeklyWriter.avatar || "/placeholder.svg"} alt={weeklyWriter.name} />
-                    <AvatarFallback>{weeklyWriter.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-xs font-bold border-2 border-background">
-                    {weeklyWriter.stories}
-                  </div>
-                </div>
-                <div className="space-y-2 text-center">
-                  <h3 className="text-xl font-bold">{weeklyWriter.name}</h3>
-                  <p className="text-muted-foreground">{weeklyWriter.bio}</p>
-                  <div className="flex justify-center gap-4 text-sm">
-                    <div>
-                      <span className="font-medium">{weeklyWriter.followers}</span>{" "}
-                      <span className="text-muted-foreground">{language === "ar" ? "متابع" : "followers"}</span>
-                    </div>
-                    <div>
-                      <span className="font-medium">{weeklyWriter.stories}</span>{" "}
-                      <span className="text-muted-foreground">{language === "ar" ? "قصة" : "stories"}</span>
-                    </div>
-                    <div>
-                      <span className="font-medium">{weeklyWriter.engagement}</span>{" "}
-                      <span className="text-muted-foreground">{language === "ar" ? "تقييم" : "rating"}</span>
-                    </div>
-                  </div>
-                  <Button className="mt-2 led-button" asChild>
-                    <Link href={`/writers/${weeklyWriter.id}`}>
-                      <UserCheck className="mr-2 h-4 w-4 rtl:ml-2 rtl:mr-0" />
-                      {language === "ar" ? "متابعة الكاتب" : "Follow Writer"}
-                    </Link>
-                  </Button>
+            <div className="flex flex-col items-center space-y-6 max-w-md mx-auto">
+              <div className="relative">
+                <div className="absolute inset-0 rounded-full led-ring"></div>
+                <div className="absolute inset-[3px] rounded-full bg-background overflow-hidden">
+                  <Image
+                    src="/placeholder.svg?height=120&width=120"
+                    alt="Weekly Writer"
+                    width={120}
+                    height={120}
+                    className="object-cover w-full h-full"
+                  />
                 </div>
               </div>
 
-              {/* Featured Story */}
-              <Card className="overflow-hidden led-card">
-                <div className="relative">
-                  <img
-                    src={weeklyWriter.featuredStory.coverImage || "/placeholder.svg"}
-                    alt={weeklyWriter.featuredStory.title}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                    <h4 className="text-white font-bold text-lg">{weeklyWriter.featuredStory.title}</h4>
-                  </div>
-                </div>
-                <CardContent className="pt-4">
-                  <p className="text-muted-foreground">{weeklyWriter.featuredStory.excerpt}</p>
-                </CardContent>
-                <CardFooter>
-                  <Button variant="ghost" className="w-full led-button-subtle" asChild>
-                    <Link href={`/stories/${weeklyWriter.featuredStory.id}`}>
-                      <BookOpen className="mr-2 h-4 w-4 rtl:ml-2 rtl:mr-0" />
-                      {t("readMore")}
-                    </Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            </div>
+              <div className="space-y-2 text-center">
+                <h3 className="text-xl font-bold">{language === "ar" ? "قريباً" : "Coming Soon"}</h3>
+                <p className="text-muted-foreground">
+                  {language === "ar"
+                    ? "سيتم اختيار الكاتب الأسبوعي قريباً بناءً على تفاعل القراء"
+                    : "The weekly writer will be selected soon based on reader engagement"}
+                </p>
+              </div>
 
-            <Button variant="outline" asChild className="led-button">
-              <Link href="/writers">{language === "ar" ? "استكشف المزيد من الكُتّاب" : "Explore More Writers"}</Link>
-            </Button>
+              <Button variant="outline" asChild className="led-button">
+                <Link href="/writers">{language === "ar" ? "استكشف الكُتّاب" : "Explore Writers"}</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className="w-full py-12 md:py-24">
+        <div className="container px-4 md:px-6">
+          <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
+                {language === "ar" ? "شارك قصتك الآن" : "Share Your Story Now"}
+              </h2>
+              <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+                {language === "ar"
+                  ? "انضم إلى مجتمع الكتّاب وشارك إبداعاتك مع العالم"
+                  : "Join our community of writers and share your creations with the world"}
+              </p>
+            </div>
+            <div className="space-x-4 rtl:space-x-reverse">
+              <Button asChild size="lg" className="led-button">
+                <Link href="/register">{language === "ar" ? "سجل الآن" : "Register Now"}</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
