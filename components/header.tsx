@@ -23,6 +23,7 @@ export default function Header() {
 
   const handleLogout = () => {
     logout()
+    // استخدام router.push بدلاً من window.location.href للتنقل
     window.location.href = "/"
   }
 
@@ -64,12 +65,6 @@ export default function Header() {
               className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
             >
               {t("writers")}
-            </Link>
-            <Link
-              href="/blog"
-              className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              {t("blog")}
             </Link>
           </nav>
         </div>
@@ -116,9 +111,6 @@ export default function Header() {
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/login">{t("login")}</Link>
-              </Button>
-              <Button size="sm" asChild className="led-button">
-                <Link href="/register">{t("register")}</Link>
               </Button>
             </div>
           )}

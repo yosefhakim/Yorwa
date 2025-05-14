@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
-import { BookOpen, Bookmark, Flame, Star, Tv } from "lucide-react"
+import { BookOpen, Bookmark, Flame, Star, Tv, Heart } from "lucide-react"
 
 export default function Home() {
   const { t, language } = useLanguage()
@@ -46,6 +46,13 @@ export default function Home() {
       icon: <Flame className="h-5 w-5" />,
       description: language === "ar" ? "قصص غموض وتشويق" : "Mystery and suspense stories",
       color: "bg-red-500",
+    },
+    {
+      id: "romance",
+      name: language === "ar" ? "رومانسية" : "Romance",
+      icon: <Heart className="h-5 w-5" />,
+      description: language === "ar" ? "قصص حب ورومانسية" : "Love and romance stories",
+      color: "bg-rose-500",
     },
   ]
 

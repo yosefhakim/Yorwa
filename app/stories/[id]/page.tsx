@@ -23,36 +23,27 @@ export default function StoryPage() {
   const [comments, setComments] = useState<any[]>([])
 
   useEffect(() => {
-    // محاكاة تحميل البيانات
-    setTimeout(() => {
-      setIsLoading(false)
+    // التحقق من تسجيل الدخول
+    const timer = setTimeout(() => {
+      if (!isLoggedIn) {
+        router.push(`/login?redirect=stories/${id}`)
+      } else {
+        setIsLoading(false)
+      }
     }, 500)
-  }, [id])
+
+    return () => clearTimeout(timer)
+  }, [isLoggedIn, router, id])
 
   const handleFollowAuthor = () => {
-    if (!isLoggedIn) {
-      router.push("/login")
-      return
-    }
-
     setIsFollowing(!isFollowing)
   }
 
   const handleLikeStory = () => {
-    if (!isLoggedIn) {
-      router.push("/login")
-      return
-    }
-
     setIsLiked(!isLiked)
   }
 
   const handleAddComment = () => {
-    if (!isLoggedIn) {
-      router.push("/login")
-      return
-    }
-
     if (!commentText.trim()) return
 
     const newComment = {

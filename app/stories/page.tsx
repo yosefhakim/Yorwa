@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language-provider"
+import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -28,6 +29,8 @@ interface Story {
 
 export default function StoriesPage() {
   const { t, language } = useLanguage()
+  const { isLoggedIn } = useAuth()
+  const router = useRouter()
   const searchParams = useSearchParams()
   const categoryParam = searchParams.get("category")
 
@@ -35,6 +38,7 @@ export default function StoriesPage() {
   const [categoryFilter, setCategoryFilter] = useState(categoryParam || "all")
   const [stories, setStories] = useState<Story[]>([])
   const [filteredStories, setFilteredStories] = useState<Story[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   // أقسام أنواع القصص
   const categories = [
@@ -44,142 +48,30 @@ export default function StoriesPage() {
     { id: "poetry", name: language === "ar" ? "شعر" : "Poetry" },
     { id: "mystery", name: language === "ar" ? "غموض" : "Mystery" },
     { id: "romance", name: language === "ar" ? "رومانسية" : "Romance" },
-    { id: "sci-fi", name: language === "ar" ? "خيال علمي" : "Sci-Fi" },
-    { id: "fantasy", name: language === "ar" ? "فانتازيا" : "Fantasy" },
     { id: "horror", name: language === "ar" ? "رعب" : "Horror" },
-    { id: "thriller", name: language === "ar" ? "إثارة" : "Thriller" },
-    { id: "historical", name: language === "ar" ? "تاريخي" : "Historical" },
   ]
 
-  // بيانات وهمية للقصص
-  const mockStories: Story[] = [
-    {
-      id: 1,
-      title: language === "ar" ? "ليلة الرعب" : "Night of Horror",
-      content: language === "ar" ? "في ليلة مظلمة وعاصفة..." : "On a dark and stormy night...",
-      category: "horror",
-      coverImage: "/placeholder.svg?height=200&width=400&text=Horror",
-      authorId: 1,
-      authorName: language === "ar" ? "أحمد محمود" : "Ahmed Mahmoud",
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      createdAt: new Date().toISOString(),
-      rating: 4.5,
-    },
-    {
-      id: 2,
-      title: language === "ar" ? "رحلة إلى المريخ" : "Journey to Mars",
-      content: language === "ar" ? "في عام 2150، بدأت أول رحلة بشرية..." : "In 2150, the first human journey...",
-      category: "sci-fi",
-      coverImage: "/placeholder.svg?height=200&width=400&text=SciFi",
-      authorId: 2,
-      authorName: language === "ar" ? "سارة خالد" : "Sara Khalid",
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      createdAt: new Date().toISOString(),
-      rating: 4.8,
-    },
-    {
-      id: 3,
-      title: language === "ar" ? "قصة حب" : "Love Story",
-      content: language === "ar" ? "عندما التقينا لأول مرة..." : "When we first met...",
-      category: "romance",
-      coverImage: "/placeholder.svg?height=200&width=400&text=Romance",
-      authorId: 3,
-      authorName: language === "ar" ? "ليلى عبدالله" : "Layla Abdullah",
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      createdAt: new Date().toISOString(),
-      rating: 4.2,
-    },
-    {
-      id: 4,
-      title: language === "ar" ? "ناروتو: قصة جديدة" : "Naruto: A New Tale",
-      content: language === "ar" ? "في قرية كونوها المخفية..." : "In the hidden village of Konoha...",
-      category: "anime",
-      coverImage: "/placeholder.svg?height=200&width=400&text=Anime",
-      authorId: 4,
-      authorName: language === "ar" ? "محمد علي" : "Mohammed Ali",
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      createdAt: new Date().toISOString(),
-      audioURL: "/audio-sample.mp3",
-      rating: 4.9,
-    },
-    {
-      id: 5,
-      title: language === "ar" ? "مملكة الخيال" : "Fantasy Kingdom",
-      content: language === "ar" ? "في مملكة بعيدة حيث التنانين..." : "In a distant kingdom where dragons...",
-      category: "fantasy",
-      coverImage: "/placeholder.svg?height=200&width=400&text=Fantasy",
-      authorId: 5,
-      authorName: language === "ar" ? "نورا حسن" : "Noura Hassan",
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      createdAt: new Date().toISOString(),
-      rating: 4.7,
-    },
-    {
-      id: 6,
-      title: language === "ar" ? "الحرب العالمية" : "World War",
-      content: language === "ar" ? "في عام 1939، بدأت الحرب..." : "In 1939, the war began...",
-      category: "historical",
-      coverImage: "/placeholder.svg?height=200&width=400&text=Historical",
-      authorId: 6,
-      authorName: language === "ar" ? "خالد عمر" : "Khalid Omar",
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      createdAt: new Date().toISOString(),
-      rating: 4.6,
-    },
-    {
-      id: 7,
-      title: language === "ar" ? "لغز الجريمة" : "The Mystery Crime",
-      content: language === "ar" ? "وجد المحقق الجثة في..." : "The detective found the body in...",
-      category: "mystery",
-      coverImage: "/placeholder.svg?height=200&width=400&text=Mystery",
-      authorId: 7,
-      authorName: language === "ar" ? "سمير فؤاد" : "Samir Fouad",
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      createdAt: new Date().toISOString(),
-      rating: 4.4,
-    },
-    {
-      id: 8,
-      title: language === "ar" ? "قصيدة الحياة" : "Poem of Life",
-      content: language === "ar" ? "الحياة كالبحر في أمواجها..." : "Life is like the sea in its waves...",
-      category: "poetry",
-      coverImage: "/placeholder.svg?height=200&width=400&text=Poetry",
-      authorId: 8,
-      authorName: language === "ar" ? "فاطمة أحمد" : "Fatima Ahmed",
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      createdAt: new Date().toISOString(),
-      rating: 4.3,
-    },
-    {
-      id: 9,
-      title: language === "ar" ? "دراكون بول: مغامرة جديدة" : "Dragon Ball: New Adventure",
-      content: language === "ar" ? "بعد معركة فريزا..." : "After the battle with Frieza...",
-      category: "anime",
-      coverImage: "/placeholder.svg?height=200&width=400&text=Anime",
-      authorId: 9,
-      authorName: language === "ar" ? "عمر حسين" : "Omar Hussein",
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      createdAt: new Date().toISOString(),
-      rating: 4.8,
-    },
-    {
-      id: 10,
-      title: language === "ar" ? "رحلتي حول العالم" : "My Journey Around the World",
-      content: language === "ar" ? "بدأت رحلتي من القاهرة..." : "My journey started from Cairo...",
-      category: "non-fiction",
-      coverImage: "/placeholder.svg?height=200&width=400&text=NonFiction",
-      authorId: 10,
-      authorName: language === "ar" ? "هدى سليم" : "Huda Salim",
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      createdAt: new Date().toISOString(),
-      rating: 4.5,
-    },
-  ]
+  // تعديل البيانات الوهمية للقصص
+  // استبدال البيانات الوهمية بمصفوفة فارغة
+  const mockStories: Story[] = []
 
-  // تحميل البيانات وتطبيق الفلتر عند تحميل الصفحة
+  // التحقق من تسجيل الدخول
   useEffect(() => {
-    setStories(mockStories)
+    // تأخير قصير لتجنب التوجيه المباشر
+    const timer = setTimeout(() => {
+      if (!isLoggedIn) {
+        router.push("/login?redirect=stories")
+      } else {
+        setIsLoading(false)
+        setStories(mockStories)
+      }
+    }, 500)
 
+    return () => clearTimeout(timer)
+  }, [isLoggedIn, router])
+
+  // تطبيق الفلتر عند تحميل الصفحة
+  useEffect(() => {
     if (categoryParam) {
       setCategoryFilter(categoryParam)
     }
@@ -221,6 +113,17 @@ export default function StoriesPage() {
       month: "long",
       day: "numeric",
     })
+  }
+
+  // إذا كان جاري التحميل، عرض رسالة التحميل
+  if (isLoading) {
+    return (
+      <div className="container py-10">
+        <div className="flex justify-center items-center h-[60vh]">
+          <p className="text-muted-foreground">{language === "ar" ? "جاري التحميل..." : "Loading..."}</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -319,8 +222,8 @@ export default function StoriesPage() {
                 ? `لا توجد قصص في فئة ${getCategoryName(categoryFilter)} حالياً.`
                 : `No stories in ${getCategoryName(categoryFilter)} category at the moment.`
               : language === "ar"
-                ? "لا توجد قصص متطابقة مع بحثك."
-                : "No stories match your search."}
+                ? "لا توجد قصص منشورة حالياً."
+                : "No stories published yet."}
           </p>
           <Button asChild variant="default" className="led-button">
             <Link href="/write">{language === "ar" ? "كن أول من يكتب قصة" : "Be the first to write a story"}</Link>

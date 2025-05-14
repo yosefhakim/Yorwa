@@ -5,6 +5,7 @@ import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language-provider"
+import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -16,6 +17,7 @@ import { Mic, MicOff, Save, Upload, BookOpen } from "lucide-react"
 
 export default function WritePage() {
   const { t, language } = useLanguage()
+  const { isLoggedIn } = useAuth()
   const router = useRouter()
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
@@ -26,32 +28,44 @@ export default function WritePage() {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null)
   const audioChunks = useRef<BlobPart[]>([])
   const [draftId, setDraftId] = useState<number | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check for draft ID in URL query
-    const searchParams = new URLSearchParams(window.location.search)
-    const draftIdParam = searchParams.get("draft")
+    // التحقق من تسجيل الدخول
+    const timer = setTimeout(() => {
+      if (!isLoggedIn) {
+        router.push("/login?redirect=write")
+      } else {
+        setIsLoading(false)
 
-    if (draftIdParam) {
-      const draftId = Number.parseInt(draftIdParam)
-      setDraftId(draftId)
+        // التحقق من وجود معرف مسودة في عنوان URL
+        const searchParams = new URLSearchParams(window.location.search)
+        const draftIdParam = searchParams.get("draft")
 
-      // Load draft data
-      const draftsJSON = localStorage.getItem("drafts")
-      if (draftsJSON) {
-        const drafts = JSON.parse(draftsJSON)
-        const draft = drafts.find((d: any) => d.id === draftId)
+        if (draftIdParam) {
+          const draftId = Number.parseInt(draftIdParam)
+          setDraftId(draftId)
 
-        if (draft) {
-          setTitle(draft.title || "")
-          setContent(draft.content || "")
-          setCategory(draft.category || "")
-          setCoverImage(draft.coverImage || null)
-          setAudioURL(draft.audioURL || null)
+          // تحميل بيانات المسودة
+          const draftsJSON = localStorage.getItem("drafts")
+          if (draftsJSON) {
+            const drafts = JSON.parse(draftsJSON)
+            const draft = drafts.find((d: any) => d.id === draftId)
+
+            if (draft) {
+              setTitle(draft.title || "")
+              setContent(draft.content || "")
+              setCategory(draft.category || "")
+              setCoverImage(draft.coverImage || null)
+              setAudioURL(draft.audioURL || null)
+            }
+          }
         }
       }
-    }
-  }, [])
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [isLoggedIn, router])
 
   const handleCoverImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -98,7 +112,7 @@ export default function WritePage() {
     if (mediaRecorder) {
       mediaRecorder.stop()
       setIsRecording(false)
-      // Stop all audio tracks
+      // إيقاف جميع مسارات الصوت
       mediaRecorder.stream.getTracks().forEach((track) => track.stop())
     }
   }
@@ -120,27 +134,27 @@ export default function WritePage() {
       isDraft: true,
     }
 
-    // Get existing drafts from localStorage
+    // الحصول على المسودات الموجودة من localStorage
     const existingDraftsJSON = localStorage.getItem("drafts")
     const existingDrafts = existingDraftsJSON ? JSON.parse(existingDraftsJSON) : []
 
     let updatedDrafts
 
     if (draftId) {
-      // Update existing draft
+      // تحديث مسودة موجودة
       updatedDrafts = existingDrafts.map((d: any) => (d.id === draftId ? draft : d))
     } else {
-      // Add new draft
+      // إضافة مسودة جديدة
       updatedDrafts = [...existingDrafts, draft]
     }
 
-    // Save back to localStorage
+    // حفظ في localStorage
     localStorage.setItem("drafts", JSON.stringify(updatedDrafts))
 
     alert(language === "ar" ? "تم حفظ المسودة بنجاح" : "Draft saved successfully")
 
     if (!draftId) {
-      // If it's a new draft, update the URL to include the draft ID
+      // إذا كانت مسودة جديدة، قم بتحديث عنوان URL ليتضمن معرف المسودة
       setDraftId(draft.id)
       router.push(`/write?draft=${draft.id}`)
     }
@@ -167,17 +181,17 @@ export default function WritePage() {
       isDraft: false,
     }
 
-    // Get existing stories from localStorage
+    // الحصول على القصص الموجودة من localStorage
     const existingStoriesJSON = localStorage.getItem("stories")
     const existingStories = existingStoriesJSON ? JSON.parse(existingStoriesJSON) : []
 
-    // Add new story
+    // إضافة قصة جديدة
     const updatedStories = [...existingStories, story]
 
-    // Save back to localStorage
+    // حفظ في localStorage
     localStorage.setItem("stories", JSON.stringify(updatedStories))
 
-    // If this was a draft, remove it from drafts
+    // إذا كانت هذه مسودة، قم بإزالتها من المسودات
     if (draftId) {
       const draftsJSON = localStorage.getItem("drafts")
       if (draftsJSON) {
@@ -189,6 +203,17 @@ export default function WritePage() {
 
     alert(language === "ar" ? "تم نشر القصة بنجاح" : "Story published successfully")
     router.push("/stories/my")
+  }
+
+  // إذا كان جاري التحميل، عرض رسالة التحميل
+  if (isLoading) {
+    return (
+      <div className="container py-10">
+        <div className="flex justify-center items-center h-[60vh]">
+          <p className="text-muted-foreground">{language === "ar" ? "جاري التحميل..." : "Loading..."}</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -231,11 +256,12 @@ export default function WritePage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="fiction">{language === "ar" ? "خيال" : "Fiction"}</SelectItem>
+                    <SelectItem value="anime">{language === "ar" ? "أنمي" : "Anime"}</SelectItem>
                     <SelectItem value="non-fiction">{language === "ar" ? "واقعي" : "Non-Fiction"}</SelectItem>
                     <SelectItem value="poetry">{language === "ar" ? "شعر" : "Poetry"}</SelectItem>
                     <SelectItem value="mystery">{language === "ar" ? "غموض" : "Mystery"}</SelectItem>
                     <SelectItem value="romance">{language === "ar" ? "رومانسية" : "Romance"}</SelectItem>
-                    <SelectItem value="sci-fi">{language === "ar" ? "خيال علمي" : "Sci-Fi"}</SelectItem>
+                    <SelectItem value="horror">{language === "ar" ? "رعب" : "Horror"}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -301,11 +327,12 @@ export default function WritePage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="fiction">{language === "ar" ? "خيال" : "Fiction"}</SelectItem>
+                    <SelectItem value="anime">{language === "ar" ? "أنمي" : "Anime"}</SelectItem>
                     <SelectItem value="non-fiction">{language === "ar" ? "واقعي" : "Non-Fiction"}</SelectItem>
                     <SelectItem value="poetry">{language === "ar" ? "شعر" : "Poetry"}</SelectItem>
                     <SelectItem value="mystery">{language === "ar" ? "غموض" : "Mystery"}</SelectItem>
                     <SelectItem value="romance">{language === "ar" ? "رومانسية" : "Romance"}</SelectItem>
-                    <SelectItem value="sci-fi">{language === "ar" ? "خيال علمي" : "Sci-Fi"}</SelectItem>
+                    <SelectItem value="horror">{language === "ar" ? "رعب" : "Horror"}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

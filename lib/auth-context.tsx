@@ -21,27 +21,49 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserData | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isInitialized, setIsInitialized] = useState(false)
 
+  // تحقق من حالة تسجيل الدخول عند بدء التطبيق
   useEffect(() => {
-    // Check if user is logged in on component mount
+    // استرجاع بيانات المستخدم من localStorage
     const storedUser = localStorage.getItem("user")
+
     if (storedUser) {
-      const userData = JSON.parse(storedUser)
-      setUser(userData)
-      setIsLoggedIn(true)
+      try {
+        const userData = JSON.parse(storedUser)
+        setUser(userData)
+        setIsLoggedIn(true)
+      } catch (error) {
+        // في حالة وجود خطأ في تحليل البيانات، قم بمسح localStorage
+        console.error("Error parsing user data:", error)
+        localStorage.removeItem("user")
+      }
     }
+
+    setIsInitialized(true)
   }, [])
 
   const login = (userData: UserData) => {
+    // حفظ بيانات المستخدم في localStorage
     localStorage.setItem("user", JSON.stringify(userData))
+
+    // تحديث حالة المصادقة
     setUser(userData)
     setIsLoggedIn(true)
   }
 
   const logout = () => {
+    // مسح بيانات المستخدم من localStorage
     localStorage.removeItem("user")
+
+    // إعادة تعيين حالة المصادقة
     setUser(null)
     setIsLoggedIn(false)
+  }
+
+  // لا تعرض المحتوى حتى يتم التحقق من حالة تسجيل الدخول
+  if (!isInitialized) {
+    return null
   }
 
   return <AuthContext.Provider value={{ user, isLoggedIn, login, logout }}>{children}</AuthContext.Provider>

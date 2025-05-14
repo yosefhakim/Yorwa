@@ -2,8 +2,8 @@
 
 import type React from "react"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useLanguage } from "@/components/language-provider"
 import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
@@ -15,23 +15,41 @@ import { Eye, EyeOff } from "lucide-react"
 
 export default function LoginPage() {
   const { t, language } = useLanguage()
-  const { login } = useAuth()
+  const { login, isLoggedIn } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectPath = searchParams.get("redirect")
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
+
+  // التحقق من حالة تسجيل الدخول عند تحميل الصفحة
+  useEffect(() => {
+    // إذا كان المستخدم مسجل الدخول بالفعل، قم بإعادة توجيهه
+    if (isLoggedIn) {
+      if (redirectPath) {
+        router.push(`/${redirectPath}`)
+      } else {
+        router.push("/")
+      }
+    } else {
+      setIsLoading(false)
+    }
+  }, [isLoggedIn, router, redirectPath])
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Simple validation
+    // تحقق بسيط
     if (!email || !password) {
       setError(language === "ar" ? "يرجى إدخال البريد الإلكتروني وكلمة المرور" : "Please enter email and password")
       return
     }
 
-    // Check if user exists in localStorage
+    // التحقق من وجود المستخدم في localStorage
     const users = localStorage.getItem("users")
     const parsedUsers = users ? JSON.parse(users) : []
 
@@ -42,14 +60,14 @@ export default function LoginPage() {
       return
     }
 
-    // In a real app, you would hash and compare passwords
-    // For demo purposes, we'll just check if they match
+    // في تطبيق حقيقي، ستقوم بتشفير ومقارنة كلمات المرور
+    // لأغراض العرض التوضيحي، سنتحقق فقط مما إذا كانت متطابقة
     if (user.password !== password) {
       setError(language === "ar" ? "كلمة المرور غير صحيحة" : "Incorrect password")
       return
     }
 
-    // Login successful
+    // تم تسجيل الدخول بنجاح
     const userData = {
       name: user.name,
       email: user.email,
@@ -57,9 +75,24 @@ export default function LoginPage() {
       registeredAt: user.registeredAt,
     }
 
-    // Use the login function from AuthContext
+    // استخدام وظيفة تسجيل الدخول من AuthContext
     login(userData)
-    router.push("/")
+
+    // إعادة التوجيه إلى الصفحة المطلوبة أو الصفحة الرئيسية
+    if (redirectPath) {
+      router.push(`/${redirectPath}`)
+    } else {
+      router.push("/")
+    }
+  }
+
+  // عرض شاشة التحميل أثناء التحقق من حالة تسجيل الدخول
+  if (isLoading) {
+    return (
+      <div className="container flex h-screen items-center justify-center">
+        <p className="text-muted-foreground">{language === "ar" ? "جاري التحميل..." : "Loading..."}</p>
+      </div>
+    )
   }
 
   return (
